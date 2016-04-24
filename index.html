@@ -1,0 +1,420 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+
+<meta charset="utf-8">
+	<head>
+		<meta charset="utf-8">
+		<title>What matters to you</title>
+		<script type="text/javascript" src="http://d3js.org/d3.v3.js"></script>
+		<link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+
+	</head>
+	<style type="text/css">
+		@font-face {
+			font-family: 'TheSerif';
+			src: url('Fonts/TheSerif_D4_5_.woff');
+			font-weight: normal;
+			font-style: normal;
+		}
+
+		body {
+		  background: #fcfcfa;
+		}
+
+		.left{
+			float: left;
+			width:50%;
+		}
+
+		.right{
+			margin-left: 50%;
+		}
+		.stroke {
+		  fill: none;
+		  stroke: #b0b0b0;
+		  stroke-width: 3px;
+		}
+
+		.fill {
+		  fill: #fff;
+		}
+
+		.graticule {
+		  fill: none;
+		  stroke: none;
+		  stroke-width: .5px;
+		  stroke-opacity: .5;
+		}
+
+		.land {
+		  fill: #deeaf1;
+		}
+
+		.boundary {
+		  fill: none;
+		  stroke: #fff;
+		  stroke-width: .5px;
+		}
+
+		.text {
+		        font-family: TheSerif, sans-serif;
+		        font-size: 0.5px;
+		        pointer-events: none;
+		}
+
+		      
+		#tooltip {
+		  position: absolute;
+		  width: auto;
+		  height: auto;
+		  padding: 10px;
+		  background-color: white;
+		  -webkit-border-radius: 2px;
+		  -moz-border-radius: 2px;
+		  border-radius: 2px;
+		  -webkit-box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.4);
+		  -moz-box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.4);
+		  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+		  pointer-events: none;
+		}
+
+		#tooltip.hidden {
+		  display: none;
+		}
+
+		#tooltip p {
+		  margin: 0;
+		  font-family: sans-serif;
+		  font-size: 13px;
+		  line-height: 16px;
+		}
+
+		#tooltipCountry {
+		  position: absolute;
+		  width: auto;
+		  height: auto;
+		  padding: 10px;
+		  background-color: white;
+		  /-webkit-border-radius: 2px;
+		  -moz-border-radius: 2px;
+		  border-radius: 2px;
+		  -webkit-box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.4);
+		  -moz-box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.4);
+		  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+		  pointer-events: none;
+		}
+
+		#tooltipCountry.hidden {
+		  display: none;
+		}
+
+		#tooltipCountry p {
+		  margin: 0;
+		  font-family: sans-serif;
+		  font-size: 13px;
+		  line-height: 16px;
+		}
+
+		.axis path,
+		.axis line {
+		  fill: none;
+		  stroke: none;
+		  shape-rendering: crispEdges;
+		}
+
+        .bar text {
+		        font-family: TheSerif,sans-serif;
+		        font-size: 11px;
+		        pointer-events: none;
+          		fill: black;
+        }
+
+		.x.axis path {
+		  display: none;
+		}
+		.axis text {
+		    font-family: sans-serif;
+		    font-size: 11px;
+		    fill:rgb(116,116,116);
+		    text-rendering:optimizeLegibility;
+
+		}
+        
+        .y.axis .tick {
+        	stroke: lightgrey;
+        	opacity: 0.4;
+		  	shape-rendering: crispEdges;
+        }
+        
+        .grid path {
+        	stroke-width: 0;
+		  	shape-rendering: crispEdges;
+        }
+
+		.button {
+			display: inline-block;
+			outline: none;
+			cursor: pointer;
+			text-align: center;
+			text-decoration: none;
+			font: 12px/100% TheSerif, sans-serif;
+			padding: .25em 1em .45em;
+			text-shadow: 0 1px 1px rgba(0,0,0,.3);
+			-webkit-border-radius: .5em; 
+			-moz-border-radius: .5em;
+			border-radius: .5em;
+			-webkit-box-shadow: 0 1px 2px rgba(0,0,0,.2);
+			-moz-box-shadow: 0 1px 2px rgba(0,0,0,.2);
+			box-shadow: 0 1px 2px rgba(0,0,0,.2);
+		}
+		.button:hover {
+			text-decoration: none;
+		}
+		.button:active {
+			position: relative;
+			top: 1px;
+		}
+		.grey {
+			color: #464646;
+			border: solid 1px #afafaf;
+			background: #6e6e6e;
+			background: -webkit-gradient(linear, left top, left bottom, from(#deeaf1), to(#a5aebf));
+			background: -moz-linear-gradient(top,  #deeaf1,  #a5aebf);
+			filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#deeaf1', endColorstr='#a5aebf');
+		}
+		.grey:hover {
+
+			color: #fff;
+			background: #616161;
+			background: -webkit-gradient(linear, left top, left bottom, from(#757575), to(#4b4b4b));
+			background: -moz-linear-gradient(top,  #757575,  #4b4b4b);
+			filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#757575', endColorstr='#4b4b4b');
+		}
+		.grey:active {
+			color: #afafaf;
+			background: -webkit-gradient(linear, left top, left bottom, from(#a5aebf), to(#deeaf1));
+			background: -moz-linear-gradient(top,  #a5aebf,  #deeaf1);
+			filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#a5aebf', endColorstr='#deeaf1');
+		}
+
+
+
+	</style>
+	<body id="mainArea">
+		<script src="http://d3js.org/d3.geo.projection.v0.min.js"></script>
+		<script src="http://d3js.org/topojson.v1.min.js"></script>
+		<script src="js/jquery.js"></script>
+		<script src="js/bootstrap.min.js"></script>
+		<script src="js/barChart.js"></script>
+		<script src="js/updateMap.js"></script>
+		<script src="js/update.js"></script> 
+		<script src="js/updateDimension.js"></script> 
+
+		<div id="tooltip" class="hidden">
+  			<p><strong><span id="genderTooltip">All</span></strong> <strong><span id="ageTooltip">15-24</span></strong></p>
+  			<p>in <strong><span id="country">France</span></strong></p>
+  			<p>rank <strong><span id="topic">Housing</span> <span id="rank">1</span></strong> out of 11 topics</p>
+		</div>
+
+		<div id="tooltipCountry" class="hidden">
+  			<p><strong><span id="genderCountry">All</span></strong> <strong><span id="ageCountry">15-24</span></strong></p>
+  			<p>in <strong><span id="countryCountry">France</span></strong> give <strong> <span id="topicCountry">Housing</span></strong>: </strong></p>
+  			<p><strong><span id="valueCountry">10</span></strong></p>
+		</div>
+
+
+		<div class="row">
+			<div class="span3">
+			<a href="index.html" id="logo"><img src="image/logo-bli.png" alt="" class="show-in-print"/></a>
+      		</div>
+			<div class="span9">
+				<h1>What matters to you?</h1>
+			</div>
+		</div>
+		<div class="row">
+			<div class="span12">
+				<p>The <b><a href="http://www.oecd.org" target="_blank">OECD</a></b> has been working on measuring well-being for over a decade, identifying 11 topics as essential for quality of life. In 2011, the <b><a href="http://www.oecdbetterlifeindex.org" target="_blank">Better Life Index</a></b> was launched to ask the public which of these topics are most important to them. The findings below reflect user preferences by topic, country, gender and age.
+			</div>
+			<div class="span12">
+			    	<b>To get started</b>, click on the topic you are interested in:  
+			    	<p>
+
+			<div class="span3"></div>
+
+			<div class="span9">
+			          <button class="button grey" id="Dimension" type="submit" value="Housing" title="Housing" onclick="updateData(value),update(),updateDimensionName(value)"><img src="image/Housing.png" alt="" class="show-in-print"/></button>
+			          <button class="button grey" id="Dimension"  type="submit" value="Income" title="Income" onclick="updateData(value),update(),updateDimensionName(value)"><img src="image/Income.png" alt="" class="show-in-print"/></button>
+			          <button class="button grey" id="Dimension" type="submit" value="Jobs" title="Jobs" onclick="updateData(value),update(),updateDimensionName(value)"><img src="image/Jobs.png" alt="" class="show-in-print"/></button>
+			          <button class="button grey" id="Dimension" type="submit" value="Community" title="Community" onclick="updateData(value),update(),updateDimensionName(value)"><img src="image/Community.png" alt="" class="show-in-print"/></button>
+			          <button class="button grey" id="Dimension" type="submit" value="Education" title="Education" onclick="updateData(value),update(),updateDimensionName(value)"><img src="image/Education.png" alt="" class="show-in-print"/></button>
+			          <button class="button grey" id="Dimension" type="submit" value="Environment" title="Environment" onclick="updateData(value),update(),updateDimensionName(value)"><img src="image/Environment.png" alt="" class="show-in-print"/></button>
+			          <button class="button grey" id="Dimension" type="submit" value="Civic_Engagement" title="Civic Engagement" onclick="updateData(value),update(),updateDimensionName(value)"><img src="image/Civic_engagement.png" alt="" class="show-in-print"/></button>
+			          <button class="button grey" id="Dimension" type="submit" value="Health" title="Health" onclick="updateData(value),update(),updateDimensionName(value)"><img src="image/Health.png" alt="" class="show-in-print"/></button>
+			          <button class="button grey" id="Dimension" type="submit" value="Life_Satisfaction" title="Life Satisfaction" onclick="updateData(value),update(),updateDimensionName(value)"><img src="image/Life_satisfaction.png" alt="" class="show-in-print"/></button>
+			          <button class="button grey" id="Dimension" type="submit" value="Safety" title="Safety" onclick="updateData(value),update(),updateDimensionName(value)"><img src="image/Safety.png" alt="" class="show-in-print"/></button>
+			          <button class="button grey" id="Dimension" type="submit" value="Work_Life_Balance" title="Work Life Balance" onclick="updateData(value),update(),updateDimensionName(value)"><img src="image/Work_life_balance.png" alt="" class="show-in-print"/></button></div)
+			</div>
+		</div>
+		<!--extra line for aesthetic reason-->
+		<div class="span12">
+			<hr>
+		</div>
+		<div class="row">
+			<div class="span2">
+				<p>
+				<h2>
+					<b>Country view</b>
+				</h2>
+				<div>Mouse over or click on the bubbles to obtain more information on the topic's ranking in that country.</div>
+				<p>
+			    <hr>
+				<h2>
+					<b>Gender and Age</b>
+				</h2>
+				<div>Select preferences by gender or age:</div><p>	
+				<div>
+					<i>Gender</i>
+				</div>
+				<div>
+			          <select name="gender" id="gender" class="input-small" onchange="updateData(),update()">
+			            <option selected="selected" value="both">Both</option>
+			            <option value="m">Men</option>
+			            <option value="f">Women</option>
+			          </select>   
+			    </div>
+			    <div>
+			    	<i>Age</i>
+			    </div>
+			    <div>
+			          <select name="age" id="age" class="input-small" onchange="updateData(),update()">
+			            <option selected="selected" value="total">All ages</option>
+			            <option value="<15">Under 15</option>
+			            <option value="15-24">15-24</option>
+			            <option value="25-34">25-34</option>
+			            <option value="35-44">35-44</option>
+			            <option value="45-54">45-54</option>
+			            <option value="55-64">55-64</option>
+			            <option value=">65">65+</option>
+			          </select>
+			    </div>
+			    <hr>
+			    <div><a href="compare_countries.html" id="compareLink" class="button grey"  type="submit">Compare 2 countries</a> </div>
+				<p>		
+			    <div  style="visibility: visible"><i  id="mousedOverCountry"></i></div>
+			    <div style="visibility: visible"><b  id="mousedOverUsers"></b></div> 
+			</div> 
+			<div class="span10">
+				<div class="row">
+					<p>
+					<div class="span10">
+			    		<div style="visibility: visible" id="dimensionClicked" ></div>
+					</div>  
+					<p>
+				</div>	
+				<div class="row">
+					<div class="span10" id="area1">
+						<script type="text/javascript">
+							var width = 900,  //previously 960
+							    height = 525; //previously 600
+
+							var color=d3.scale.ordinal()
+								.domain(["Housing","Jobs","Income","Community","Education","Environment","Civic Engagement","Health","Life Satisfaction","Safety","Work Life Balance"])
+								.range(["#3DA594","#237FBD","#2CA3E0","#CE485D","#7EA943","#30A457","#DCA922","#7C3A73","#E26237","#606060","#962828"]);
+
+							var radius = d3.scale.linear().range([1,5]);
+							
+							var projection = d3.geo.cylindricalStereographic()
+								.parallel(45)
+								.rotate([0,0]) //move the projection previous[90,0]
+							    .scale(200) //previous 217
+							    .translate([width / 2, height /2])
+							    .precision(.1);
+
+							var path = d3.geo.path()
+							    .projection(projection);
+
+							var graticule = d3.geo.graticule();
+
+							var svg = d3.select("#area1").append("svg")
+							    .attr("width", width)
+							    .attr("height", height);
+
+							var g = svg.append("g");
+
+							g.append("path")
+				    			.datum(graticule)
+				    			.attr("class", "graticule")
+				    			.attr("d", path);
+
+				    		d3.json("data/World-50m.json", function(error, world) {
+				  				g.insert("path", ".graticule")
+				      				.datum(topojson.feature(world, world.objects.land))
+				      				.attr("class", "land")
+				      				.attr("d", path);
+
+								g.insert("path", ".graticule")
+								    .datum(topojson.mesh(world, world.objects.countries, function(a, b) { return a !== b; }))
+								    .attr("class", "boundary")
+								    .attr("d", path);
+							});
+
+							updateData("Housing");
+
+
+						</script>
+					</div> 
+				</div>
+				<script type="text/javascript">updateDimensionName("Housing");</script>
+				
+				<!--extra line for aesthetic reason-->
+				<br>
+
+			</div>
+		</div>
+
+		<!--extra line for aesthetic reason-->
+		<div class="span12">
+			<hr>
+		</div>
+		<!-- /-->
+
+		<div class="row">
+			<p>
+			<div class="span12">		
+				<div class="row">
+					<p>
+
+					<h2 class="span12" id="hideShowCountrySentence"></h2>
+					<h2 class="span12" id="hideShowCountryName"><b  id="selectedCountry"></b>
+					</h2>
+				</div>	
+				<div class="row">
+					<h5 class="span12" ><i  id="mousedOverBarTopic"></i> <i  id="mousedOverBarRank"></i> 
+					</h5>
+				</div>	
+				<div class="row">
+					<div class="span12" id="area2">
+						<script  type="text/javascript">
+							var margin = {top: 20, right: 20, bottom: 110, left: 50},
+							    width = 1050 - margin.left - margin.right, //previously 960
+							    height = 350 - margin.top - margin.bottom;
+
+							var formatPercent = d3.format("0.002%");
+
+
+							var color=d3.scale.ordinal()
+								.domain(["Housing","Jobs","Income","Community","Education","Environment","Civic Engagement","Health","Life Satisfaction","Safety","Work Life Balance"])
+								.range(["#3DA594","#237FBD","#2CA3E0","#CE485D","#7EA943","#30A457","#DCA922","#7C3A73","#E26237","#606060","#962828"]);
+
+							var svg2 = d3.select("#area2").append("svg")
+							    .attr("width", width + margin.left + margin.right)
+							    .attr("height", height + margin.top + margin.bottom)
+							    .append("g")
+							    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+						</script>
+					</div>
+
+				</div>	
+		  	</div>
+		</div>
+	</body>
